@@ -1,0 +1,23 @@
+{
+  "name": "bookish-js-2",
+  "version": "1.0.0",
+  "description": "bookish example implementation",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djna/Bookish-JS-2.git"
+  },
+  "author": "Dave Artus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djna/Bookish-JS-2/issues"
+  },
+  "homepage": "https://github.com/djna/Bookish-JS-2#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
