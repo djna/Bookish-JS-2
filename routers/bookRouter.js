@@ -12,7 +12,15 @@ class BookController {
 
     getAllBooks(request, response) {
         console.log( "request for all books" + request.url );
-        response.status(500).send({"message" : "please try later" } );
+        let worker = Promise.resolve( 
+            new Book(44, "Back from the future", "Dave", null)
+        );
+
+        worker.then(
+           (book) => 
+               response.status(200).send(
+                 JSON.stringify(book) )
+        );
     }
 
     getBook(request, response) {
