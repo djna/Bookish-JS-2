@@ -1,10 +1,12 @@
 
-import BookController from './controllers/bookController.js';
+import BookRouter from './routers/bookRouter.js';
+import AuthenticationRouter from './routers/authenticationRouter.js';
 import express from 'express';
 
 const app = express();
 
-app.use('/books', BookController  );
+app.use('/', AuthenticationRouter  );
+app.use('/books', BookRouter  );
 
 // handle errors, log diagnostic, give user simple error message
 app.use(function (err, req, res, next) {
