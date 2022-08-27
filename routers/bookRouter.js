@@ -1,6 +1,9 @@
 
 import express from 'express';
 import Book from '../models/book.js';
+import BookRepository from '../repositories/bookRepository.js';
+
+const bookRepo = new BookRepository();
 
 class BookController {
     constructor() {
@@ -12,14 +15,11 @@ class BookController {
 
     getAllBooks(request, response) {
         console.log( "request for all books" + request.url );
-        let worker = Promise.resolve( 
-            new Book(44, "Back from the future", "Dave", null)
-        );
-
-        worker.then(
-           (book) => 
+        
+        bookRepo.getAllBooks().then(
+           (books) => 
                response.status(200).send(
-                 JSON.stringify(book) )
+                 JSON.stringify(books) )
         );
     }
 
