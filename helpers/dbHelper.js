@@ -51,5 +51,17 @@ async function getDbPool() {
     );
     return poolPromise;
 }
-export default getDbPool;
+
+async function executeSql(queryString, parameters){
+  const pool = await getDbPool();
+  const request = await pool.request();
+  if ( parameters ) { 
+    Object.keys(parameters).forEach(
+        k => request.input(k, parameters[k])
+    );
+  }  
+  return request.query(queryString); 
+
+}
+export default executeSql;
 

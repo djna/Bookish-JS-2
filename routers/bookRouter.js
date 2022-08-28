@@ -13,51 +13,55 @@ class BookController {
         this.router.post('/', (request, response) => this.addBook(request, response));
     }
 
-    getAllBooks(request, response) {
+    async getAllBooks(request, response) {
         console.log("request for all books" + request.url);
 
-        bookRepo.getAllBooks().then(
-            (books) =>
-                response.status(200).send(
-                    JSON.stringify(books))
-        ).catch(e => this.sendErrorResponse(e, response));
-
-    }
-
-    sendErrorResponse(err, response) {
-        console.log("query failed ", err);
-        response.status(500).send(
-            JSON.stringify(
-                {
-                    "message": "System unavailable, please try later",
-                    "error": err
-                }
-            )
-        );
-        return;
-    }
-
-    getBook(request, response) {
-        const id = request.params.id;
-        console.log("request for book " + id);
-        if (id == 0) {
-            throw ("bad id");
+        try {
+            let books = await bookRepo.getAllBooks();
+            response.status(200).send(JSON.stringify(books));
+        } catch (e) {
+            BookController.sendErrorResponse(e, response);
         }
-        const mock = { "id": id, "title": "mock", "author": "lewis" };
-        response.status(200).send(JSON.stringify(mock));
+
     }
 
-    addBook(request, response) {
+    async getBook(request, response) {
+        const idStr = request.params.id;
+        const id = parseInt(idStr)
+        if ( isNaN(id) || ( (id + "") !== idStr) ){
+            response.status(400).send(JSON.stringify({"id": idStr, "message" : "id must be integer"}));
+            return;
+        }
+
+
+        console.log("request for book " + id);
+
+        try {
+            let book = await bookRepo.getBook(id);
+            if (book) {
+                response.status(200).send(JSON.stringify(book));
+            } else {
+                response.status(404).send(JSON.stringify({"id": id}));
+            }
+        } catch (e) {
+            BookController.sendErrorResponse(e, response);
+        }
+    }
+
+  
+
+    async addBook(request, response) {
         const book = BookController.getBookFromRequest(request);
         if (!book) {
             response.status(400).send({ errors: ['Invalid book'] });
         } else {
-            let id = 9999;
-            console.log("should insert " + id);
-            const reference = request.protocol + '://' + request.get('host') + request.originalUrl + "/" + id;
+            let insertedId = await bookRepo.addBook(book);
+
+            console.log("added record with id: ", insertedId);
+            const reference = request.protocol + '://' + request.get('host') + request.originalUrl + "/" + insertedId;
             const responseBody = {
-                "message": "Mocked adding book",
-                "id": id,
+                "message": "Added book",
+                "id": insertedId,
                 "reference": reference
             };
 
@@ -85,6 +89,19 @@ class BookController {
         } else {
             return null;
         }
+    }
+
+    static sendErrorResponse(err, response, status = 500) {
+        console.log("query failed ", err);
+        response.status(status).send(
+            JSON.stringify(
+                {
+                    "message": "System unavailable, please try later",
+                    "error": err
+                }
+            )
+        );
+        return;
     }
 
 }
