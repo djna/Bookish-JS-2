@@ -7,7 +7,8 @@ import express from 'express';
 const router = express.Router();
 const userRepo = new UserRepository();
 
-router.get('/login', async (req, res) => {
+// Authentication - routed from /logib
+router.get('/', async (req, res) => {
     const username = req.query.username;
     const password = req.query.password;
     if (!username || !password) {
@@ -31,16 +32,6 @@ router.get('/login', async (req, res) => {
     }
 });
 
-router.use((req, res, next) => {
-    const token = req.headers['x-access-token'];
-    if (isTokenValid(token)) {
-        next();
-    } else {
-        return res.status(403).send({
-            success: false,
-            message: 'Invalid token'
-        });
-    }
-});
+
 
 export default router;

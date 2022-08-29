@@ -22,6 +22,8 @@
     "fs.promises": "^0.1.2",
     "mssql": "^9.0.1",
     "mustache": "^4.2.0",
-    "nocache": "^3.0.4"
+    "nocache": "^3.0.4",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0"
   }
 }
