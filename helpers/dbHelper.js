@@ -26,30 +26,24 @@ try {
 // promise returned by mssql
 // we add a status flag so that we can synchronously
 // check whether a connection was established
-let poolPromise = null;
+let pool = null;
 async function getDbPool() {
 
   // Already made an initial connection?
-  if (poolPromise &&  poolPromise.connectionGood ) {
-    return poolPromise;
+  if (pool  ) {
+    return pool;
   }
 
   // if never connected try again
-  poolPromise = new mssql.ConnectionPool(mssqlConnectionConfig)
-          .connect()
-          .then(pool => {
-              console.log('Connected to MSSQL')
-              return pool
-          }) .catch(err => {
-              console.log('Database Connection Failed!', err.originalError);
-              return Promise.reject('Database Connection Failed!' + err.name);
-          }
-    )
-    poolPromise.connectionGood = false;
-    poolPromise.then( () =>  poolPromise.connectionGood = true ).catch(
-      (err) => console.log("Didn't connect this time ", err)
-    );
-    return poolPromise;
+  try {
+      pool = await new mssql.ConnectionPool(mssqlConnectionConfig).connect();
+
+      console.log('Connected to MSSQL');
+      return poolPromise;
+  } catch (err) {
+      console.log('Database Connection Failed!', err.originalError);
+      return Promise.reject('Database Connection Failed!' + err.name);
+  }
 }
 
 async function executeSql(queryString, parameters){
@@ -57,7 +51,7 @@ async function executeSql(queryString, parameters){
   const request = await pool.request();
   if ( parameters ) { 
     Object.keys(parameters).forEach(
-        k => request.input(k, parameters[k])
+        (k) => request.input(k, parameters[k])
     );
   }  
   return request.query(queryString); 
