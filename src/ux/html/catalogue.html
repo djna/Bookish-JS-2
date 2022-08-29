@@ -1,0 +1,48 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+<title>Bookish Catalogue</title>
+<style>
+    body{
+        background-color: rgb(235, 235, 191);
+    }
+    table {
+      background-color: rgb(240, 240, 220);
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {background-color: #f2f2f2;}
+</style>
+</head>
+
+<body>
+	
+	<div id="holder" class="ui grid">
+           <H1>Bookish Catalogue For User: {{userInfo.user}} Name: {{userInfo.name}} </H1>
+	</div>
+
+      <table>
+          <tr>      
+            <th>Author</th>
+            <th>Title</th>
+          </tr>  
+      {{#books}}
+      <tr>
+          
+          <td>{{author}}</td>
+          <td>{{title}}</td>
+      </tr>
+      {{/books}}
+      </table>
+
+</body>
+</html>
