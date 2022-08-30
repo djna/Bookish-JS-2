@@ -10,12 +10,8 @@ export default class UserRepository {
                 { "username": username }
             );
 
-            if ( ! queryResult.recordset){
-                throw new Error('No results from user query');
-            }
-
             let userSet = queryResult.recordset;
-            if ( userSet.length == 0){
+            if ( (! userSet) || userSet.length == 0){
                 throw new Error('No valid users');
             }
             let user = userSet[0];

@@ -1,13 +1,16 @@
 
-import fsp from 'fs.promises';
+
+
 import express from 'express';
-import Mustache from'mustache';
+import renderPage from '../../helpers/pageHelper.js';
+import BookRepository from '../../repositories/bookRepository.js';
 
 class UxController {
     constructor() {
         this.router = express.Router();
         this.router.get('/home', (request, response) => this.getHome(request, response));
         this.router.get('/catalogue', (request, response) => this.getCatalogue(request, response));
+        this.bookRepository = new BookRepository();
     }
 
     getHome(request, response) {
@@ -15,39 +18,36 @@ class UxController {
             user: "unknown",
             name: "Mock User"
         };
-        this.renderPage(request, response, "ux/html/home.html", userInfo);
+        renderPage(request, response, "ux/html/home.html", userInfo);
     }
 
-    getCatalogue(request, response) {
-        var data = {
-            userInfo : {
-                user: "unknown",
-                name: "Mock User"
-            },
-            books: [
-                { "author": "Richard Thompson", "title" : "Beeswing"},
-                { "author": "P.G.Bell", "title" : "The Train to Impossible Places"},
-                { "author": "Georgina Haydn", "title" : "Taverna"}
-            ]
+    async getCatalogue(request, response) {
+
+        const userInfo = {
+            user: "unknown",
+            name: "Mock User"
         }
-        this.renderPage(request, response, "ux/html/catalogue.html", data);
+
+        try {
+            let books = await this.bookRepository.getAllBooks();
+            
+            const catalogueData = {
+                    userInfo: userInfo,
+                    books: books
+            };
+            renderPage(request, response, "ux/html/catalogue.html", catalogueData);
+        } catch (e){
+            response.status(500).send("repository error");
+        }
     }
 
-    renderPage(request, response, page, data) {
-        fsp.readFile(page, 'utf8').then(
-            (pageTemplate) => {
-                let pageHtml = Mustache.render(pageTemplate, data);
-                response.status(200).send(pageHtml);
-            }
-        ).catch((e) => this.errorResponse(response, e));
-    }
 
-    errorResponse(response, error, statusCode){
-        if ( ! statusCode ){
+    errorResponse(response, error, statusCode) {
+        if (!statusCode) {
             statusCode = 500;
         }
         response.status(statusCode).send(error);
-}
+    }
 
 }
 
