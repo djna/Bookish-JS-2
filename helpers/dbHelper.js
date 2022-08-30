@@ -39,10 +39,10 @@ async function getDbPool() {
       pool = await new mssql.ConnectionPool(mssqlConnectionConfig).connect();
 
       console.log('Connected to MSSQL');
-      return poolPromise;
+      return pool;
   } catch (err) {
       console.log('Database Connection Failed!', err.originalError);
-      return Promise.reject('Database Connection Failed!' + err.name);
+      return Promise.reject('Database Connection Failed, ' + err.name);
   }
 }
 
