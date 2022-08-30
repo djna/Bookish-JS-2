@@ -14,11 +14,11 @@ app.use(express.json());
 
 configurePassportToAuthenticateTokens();
 
-// passport for authorisation
+// passport for authorisation and authentication
 app.use(passport.initialize());
 
 app.use('/login', AuthenticationRouter  );
-app.use('/books', BookRouter  );
+app.use('/books', passport.authenticate('jwt', {session: false}), BookRouter  );
 
 // handle errors, log diagnostic, give user simple error message
 app.use(function (err, req, res, next) {
@@ -37,9 +37,13 @@ function configurePassportToAuthenticateTokens() {
     jwtOptions.secretOrKey = secret;
     const userRepository = new UserRepository();
     passport.use(new passportJwt.Strategy(jwtOptions, (decodedJwt, next) => {
-        userRepository.getUser(decodedJwt.username)
+        userRepository.getUserByName(decodedJwt.username)
             .then(user => {
                 next(null, user);
-            });
+            }).catch(e => {
+              console.log("Authentication error ", e);
+              next('authentication failure: ' + decodedJwt.username);
+            }
+              );
     }));
 }

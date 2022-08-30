@@ -9,7 +9,8 @@ export default class BookRepository {
 
             const result = await executeSql('SELECT * FROM books');
 
-            let books = result.recordsets[0];
+            let books = result.recordset;
+            
             return books.map(book => {
                 return new Book(book.id, book.title, book.author, book.isbn);
             });
@@ -26,7 +27,7 @@ export default class BookRepository {
                 { 'bookid': id }
             );
 
-            let books = result.recordsets[0];
+            let books = result.recordset;
             books.map(book => {
                 return new Book(book.id, book.title, book.author, book.isbn);
             });
@@ -54,7 +55,7 @@ export default class BookRepository {
                              );
             
             console.log("inserted: " + JSON.stringify(result) );
-            let insertOutputRows = result.recordsets[0];
+            let insertOutputRows = result.recordset;
             if ( insertOutputRows.length < 1) {
                 throw "System Repository Insertion Error";
             }
